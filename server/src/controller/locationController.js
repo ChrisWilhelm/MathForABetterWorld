@@ -12,12 +12,13 @@ export const createLocation = async (req, res) => {
   if (validate(req, res)) {
     return res;
   }
-  const { name, longitude, latitude } = req.body;
+  const { name, longitude, latitude, isActive } = req.body;
   const location = await prisma.donationLocation.create({
     data: {
       name,
       longitude,
       latitude,
+      isActive,
     },
   });
   return res.status(StatusCodes.CREATED).json({ location });
@@ -43,7 +44,7 @@ export const updateLocation = async (req, res) => {
     return res;
   }
   const id = parseInt(req.params.id, 10);
-  const { name, longitude, latitude } = req.body;
+  const { name, longitude, latitude, isActive } = req.body;
   const location = await prisma.donationLocation.update({
     where: {
       id,
@@ -52,6 +53,7 @@ export const updateLocation = async (req, res) => {
       name,
       longitude,
       latitude,
+      isActive,
     },
   });
   return res.status(StatusCodes.ACCEPTED).json({ location });

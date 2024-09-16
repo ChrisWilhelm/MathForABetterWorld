@@ -56,35 +56,38 @@ if 'token' in st.session_state and 'role' in st.session_state:
                     else:
                         st.error(r["msg"])
     elif editType == 'Update User':
-        # Input field for User ID
-        users = json.loads(employeeConnectors.getUsers())["users"]
-        usersDF = pd.DataFrame.from_dict(users)
-        filtered_usersDF = usersDF[pd.isna(usersDF['employeeId'])]
-        filtered_usersDF = filtered_usersDF.drop(columns=['employee', 'employeeId'])
+        allUsers = [{"id": -1, "name": ""}]
+        dbUsers = json.loads(employeeConnectors.getUsers())
+        if dbUsers:
+            allUsers = allUsers + dbUsers["users"]
+        usersDF = pd.DataFrame(allUsers)
+        usersDF = usersDF[usersDF['id'] != -1]
+        usersDF = usersDF.drop(columns=['employee'])
 
-        user_id_to_update = st.selectbox("Select User ID to Update:", filtered_usersDF['id'].values, index=0)
+        user_to_update = st.selectbox("Select User to Update:", allUsers, format_func=lambda user: f'{user["name"]}')
         find_user = st.button("Find User")
         
         if find_user:
-            if user_id_to_update in filtered_usersDF['id'].values:
-                selected_user = filtered_usersDF.loc[filtered_usersDF['id'] == user_id_to_update]
+            selected_user_name = user_to_update["name"]
+            selected_user = next((user for user in allUsers if user['name'] == selected_user_name), None)
+            if selected_user:
 
                 with st.form("template_form"):
                     left, right = st.columns(2)
-                    name = left.text_input("Name", selected_user['name'].values[0])
-                    email = right.text_input("Email", selected_user['email'].values[0])
-                    phoneNumber = left.text_input("Phone Number (Optional)", selected_user['phoneNumber'].values[0])
-                    address = right.text_input("Address (Optional)", selected_user['address'].values[0])
-                    isActive = left.checkbox("Is Active Volunteer?", selected_user['isActive'].values[0])
+                    name = left.text_input("Name", selected_user['name'])
+                    email = right.text_input("Email", selected_user['email'])
+                    phoneNumber = left.text_input("Phone Number (Optional)", selected_user['phoneNumber'])
+                    address = right.text_input("Address (Optional)", selected_user['address'])
+                    isActive = left.checkbox("Is Active Volunteer?", selected_user['isActive'])
                     update_submit = st.form_submit_button("Update User")
 
                     if update_submit:
-                        jsonObj = json.loads(userConnector.postUser(email, name, None if phoneNumber == "" else phoneNumber, None if address == "" else address, isActive))
+                        jsonObj = json.loads(userConnector.postUser(email, name, isActive, None if phoneNumber == "" else phoneNumber, None if address == "" else address))
                         newCat = pd.DataFrame(jsonObj["user"], index=[0])
                         st.experimental_rerun()
             else:
-                st.warning("User ID not found. Please enter a valid User ID.")
-        st.dataframe(filtered_usersDF)
+                st.warning("User not found. Please enter a valid User.")
+        st.write(usersDF)
 else:
     st.error("No access to create user. Please log in if admin.")
 

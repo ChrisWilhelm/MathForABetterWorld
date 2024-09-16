@@ -51,20 +51,32 @@ if 'token' in st.session_state:
                 newDist = distributorConnectors.postDistributor(name)
                 st.experimental_rerun()
     elif editType == "Update Distributor":
-        with st.form("template_form"):
-            left, right = st.columns(2)
-            idx = left.number_input("Id", min_value=1)
-            name = right.text_input("Name", "")
-            editSubmit = st.form_submit_button()
-        if editSubmit:
-            if name == "":
-                st.error("Please fill in form elements!")
-            elif idx in distributorDF.id.unique():
-                editedCat = distributorConnectors.updateDistributor(idx, name)
-                st.experimental_rerun()
-            else:
-                st.error("Please input an id that is in the table!")
-st.dataframe(distributorDF)
+
+        # Input field for Distributor ID
+        distributors = distributorConnectors.getDistributors()["distributors"]
+        distributorsDF = pd.DataFrame.from_dict(distributors)
+
+        distributor_to_update = st.selectbox("Select Distributor to Update:", distributorsDF['name'].values, index=0)
+        find_distributor = st.button("Find Distributor")
+
+        if find_distributor:
+            if distributor_to_update in distributorsDF['name'].values:
+                selected_distributor = distributorsDF.loc[distributorsDF['name'] == distributor_to_update]
+
+                with st.form("template_form"):
+                    left, right = st.columns(2)
+                    name = left.text_input("Name", selected_distributor['name'].values[0])
+                    editSubmit = st.form_submit_button()
+                if editSubmit:
+                    if name == "":
+                        st.error("Please fill in form elements!")
+                    else:
+                        distributor_id = selected_distributor['id'].values[0]
+                        editedCat = distributorConnectors.updateDistributor(distributor_id, name)
+                        st.experimental_rerun()
+        else:
+            st.warning("Distributor not found. Please enter a valid Distributor.")
+    st.dataframe(distributorDF)
 
 # Streamlit widgets automatically run the script from top to bottom. Since
 # this button is not connected to any other logic, it just causes a plain

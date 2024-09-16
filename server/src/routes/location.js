@@ -15,6 +15,7 @@ router.post(
   body("name", "Must include unique name for location").notEmpty(),
   body("longitude", "Longitude must be a string").notEmpty().isString(),
   body("latitude", "latitude must be a string").notEmpty().isString(),
+  body("isActive", "isActive must be a boolean").notEmpty().isBoolean(),
   validator.isValidLatitude,
   validator.isValidLongitude,
   validator.isUniqueName,
@@ -40,6 +41,7 @@ router.post(
   body("latitude", "Must include a string latitude in the body")
     .notEmpty()
     .isString(),
+  body("isActive", "isActive must be a boolean").notEmpty().isBoolean(),
   validator.isLocationId,
   validator.isUniqueNameNotId,
   controller.updateLocation

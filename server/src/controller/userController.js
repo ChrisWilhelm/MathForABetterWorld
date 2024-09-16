@@ -7,9 +7,9 @@ export const create = async (req, res) => {
   if (validate(req, res)) {
     return res;
   }
-  const { name, email, phoneNumber, address } = req.body;
+  const { name, email, phoneNumber, address, isActive } = req.body;
   const user = await prisma.user.create({
-    data: { name, email, phoneNumber, address },
+    data: { name, email, phoneNumber, address, isActive },
   });
   return res.status(StatusCodes.ACCEPTED).json({ user });
 };

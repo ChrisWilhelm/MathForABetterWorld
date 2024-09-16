@@ -43,7 +43,6 @@ model Shift {
   regularFoodTaken Float     @default(0)
   damagedFoodTaken Float     @default(0)
   duration         Float?
-
 }
 
 model Pallet {
@@ -60,6 +59,7 @@ model Pallet {
   description    String?
   categoryIds    Int[]
   barcodes       Int[]
+  isActive       Boolean     @default(true)
 }
 
 model ExportItem {
@@ -87,6 +87,7 @@ model Distributor {
   id               Int      @id @default(autoincrement())
   name             String   @unique
   distributedEntry Pallet[]
+  isActive         Boolean  @default(true)
 }
 
 model Rack {
@@ -95,6 +96,7 @@ model Rack {
   description String
   weightLimit Float?
   pallet      Pallet[]
+  isActive    Boolean  @default(true)
 }
 
 model Category {
@@ -102,6 +104,7 @@ model Category {
   name        String
   description String
   exports     ExportItem[]
+  isActive    Boolean      @default(true)
 }
 
 enum Role {
@@ -120,4 +123,5 @@ model DonationLocation {
   longitude String
   latitude  String
   exports   ExportItem[]
+  isActive  Boolean      @default(true)
 }

@@ -6,10 +6,11 @@ export const createDistributor = async (req, res) => {
   if (validate(req, res)) {
     return res;
   }
-  const { name } = req.body;
+  const { name, isActive } = req.body;
   const distributor = await prisma.distributor.create({
     data: {
       name,
+      isActive,
     },
   });
   return res.status(StatusCodes.CREATED).json({ distributor });
@@ -40,13 +41,14 @@ export const updateDistributor = async (req, res) => {
   if (validate(req, res)) {
     return res;
   }
-  const { id, name } = req.body;
+  const { id, name, isActive } = req.body;
   const distributor = await prisma.distributor.update({
     where: {
       id,
     },
     data: {
       name,
+      isActive,
     },
   });
   return res.status(StatusCodes.ACCEPTED).json({ distributor });

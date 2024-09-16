@@ -11,13 +11,14 @@ export const createRack = async (req, res) => {
   if (validate(req, res)) {
     return res;
   }
-  const { location, description, weightLimit } = req.body;
+  const { location, description, weightLimit, isActive } = req.body;
   // const { id } = req.user;
   const rack = await prisma.rack.create({
     data: {
       location,
       description,
       weightLimit,
+      isActive,
     },
   });
   return res.status(StatusCodes.CREATED).json({ rack });
@@ -44,7 +45,7 @@ export const updateRack = async (req, res) => {
   }
 
   const id = parseInt(req.params.id, 10);
-  const { location, description, weightLimit } = req.body;
+  const { location, description, weightLimit, isActive } = req.body;
   const rack = await prisma.rack.update({
     where: {
       id,
@@ -53,6 +54,7 @@ export const updateRack = async (req, res) => {
       location,
       description,
       weightLimit,
+      isActive,
     },
   });
   return res.status(StatusCodes.ACCEPTED).json({ rack });
